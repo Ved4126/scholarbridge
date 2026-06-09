@@ -112,7 +112,7 @@ def test_range_missing_field():
 # GENERAL
 def test_unsupported_type():
     # Hack the type to test the ValueError
-    feature = ScholarshipFeature(id="err", label="Err", type="output", required=True)
+    feature = ScholarshipFeature(id="err", label="Err", type="output", student_field="err", required=True)
     feature.type = "unsupported"
     with pytest.raises(ValueError, match="Unsupported feature type"):
         match_feature({"err": 1}, feature)
