@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ScholarBridge Scholarship Record",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "scholarship_name": { "type": "string" },
+    "org_name": { "type": "string" },
+    "source_url": { "type": "string" },
+    "country": { "type": "string" },
+    "source_type": { "type": "string" },
+    "award_amount": { "type": ["number", "null"] },
+    "currency": { "type": ["string", "null"] },
+    "deadline": { "type": ["string", "null"], "format": "date" },
+    "award_year": { "type": ["string", "integer", "null"] },
+    "degree_levels": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "eligible_nationalities": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "eligible_visa_types": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "fields_of_study": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "description": { "type": "string" },
+    "eligibility_text": { "type": "string" },
+    "feature_manifest": {
+      "type": "object",
+      "properties": {
+        "total_features": { "type": "integer" },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "label": { "type": "string" },
+              "type": { "type": "string", "enum": ["enum", "threshold", "boolean", "output", "range"] },
+              "required": { "type": "boolean" },
+              "student_field": { "type": "string" },
+              "values": { "type": "array" },
+              "min": { "type": "number" },
+              "max": { "type": "number" }
+            },
+            "required": ["id", "label", "type", "required"]
+          }
+        }
+      },
+      "required": ["total_features", "features"]
+    },
+    "last_verified": { "type": "string", "format": "date-time" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "required": [
+    "id", "scholarship_name", "org_name", "source_url", "country", "source_type",
+    "award_amount", "currency", "deadline", "award_year", "degree_levels",
+    "eligible_nationalities", "eligible_visa_types", "fields_of_study",
+    "description", "eligibility_text", "feature_manifest", "last_verified",
+    "created_at", "updated_at"
+  ]
+}
