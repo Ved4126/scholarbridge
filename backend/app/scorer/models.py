@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import Any, Literal
-from datetime import datetime
+from typing import Any, Literal, Optional
+from datetime import date, datetime
 from pydantic import BaseModel, Field
 
 class ScholarshipFeature(BaseModel):
@@ -39,3 +39,26 @@ class ScholarshipRecord(BaseModel):
     last_verified: str | datetime
     created_at: str | datetime
     updated_at: str | datetime
+
+
+class FeatureMatchDetail(BaseModel):
+    """Represents a single unmatched feature in the gap analysis."""
+
+    field: str
+    label: str
+    requirement: str
+    student_value: Any = None
+
+
+class ScoringResult(BaseModel):
+    """Full scoring result for one scholarship against one student profile."""
+
+    scholarship_id: str
+    name: str
+    org_name: str
+    score: float
+    match_label: str
+    deadline: Optional[str] = None
+    source_url: str
+    gap_analysis: list[FeatureMatchDetail] = Field(default_factory=list)
+    action_checklist: list[str] = Field(default_factory=list)
