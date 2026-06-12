@@ -519,3 +519,127 @@ def test_output_features_never_in_gap_analysis():
     result = score_one(profile_vector, scholarship)
 
     assert len(result.gap_analysis) == 0
+
+
+# ---------------------------------------------------------------------------
+# 18. Score rounding — explicit verification at 1 decimal place
+# ---------------------------------------------------------------------------
+
+def test_rounding_two_of_three_features():
+    """Canonical repeating decimal: M=2, T=3 → 66.666... rounds to 66.7."""
+    features = [
+        {"id": "f1", "label": "F1", "type": "boolean",
+         "student_field": "f1", "required": True},
+        {"id": "f2", "label": "F2", "type": "boolean",
+         "student_field": "f2", "required": True},
+        {"id": "f3", "label": "F3", "type": "boolean",
+         "student_field": "f3", "required": True},
+    ]
+    scholarship = make_scholarship(features)
+    profile_vector = {"f1": True, "f2": True, "f3": False}
+
+    result = score_one(profile_vector, scholarship)
+
+    # Raw: (2/3)*100 = 66.666... → rounded to 66.7
+    assert result.score == 66.7
+    assert result.match_label == "Possible Match"
+
+
+def test_rounding_one_of_three_features():
+    """M=1, T=3 → 33.333... rounds to 33.3."""
+    features = [
+        {"id": "f1", "label": "F1", "type": "boolean",
+         "student_field": "f1", "required": True},
+        {"id": "f2", "label": "F2", "type": "boolean",
+         "student_field": "f2", "required": True},
+        {"id": "f3", "label": "F3", "type": "boolean",
+         "student_field": "f3", "required": True},
+    ]
+    scholarship = make_scholarship(features)
+    profile_vector = {"f1": True, "f2": False, "f3": False}
+
+    result = score_one(profile_vector, scholarship)
+
+    # Raw: (1/3)*100 = 33.333... → rounded to 33.3
+    assert result.score == 33.3
+    assert result.match_label == "Below Threshold"
+
+
+def test_rounding_one_of_six_features():
+    """M=1, T=6 → 16.666... rounds to 16.7."""
+    features = [
+        {"id": f"f{i}", "label": f"F{i}", "type": "boolean",
+         "student_field": f"f{i}", "required": True}
+        for i in range(6)
+    ]
+    scholarship = make_scholarship(features)
+    profile_vector = {f"f{i}": (i == 0) for i in range(6)}
+
+    result = score_one(profile_vector, scholarship)
+
+    # Raw: (1/6)*100 = 16.666... → rounded to 16.7
+    assert result.score == 16.7
+    assert result.match_label == "Below Threshold"
+
+
+def test_rounding_five_of_six_features():
+    """M=5, T=6 → 83.333... rounds to 83.3."""
+    features = [
+        {"id": f"f{i}", "label": f"F{i}", "type": "boolean",
+         "student_field": f"f{i}", "required": True}
+        for i in range(6)
+    ]
+    scholarship = make_scholarship(features)
+    profile_vector = {f"f{i}": (i != 5) for i in range(6)}
+
+    result = score_one(profile_vector, scholarship)
+
+    # Raw: (5/6)*100 = 83.333... → rounded to 83.3
+    assert result.score == 83.3
+    assert result.match_label == "Good Match"
+
+
+def test_rounding_clean_score_unchanged():
+    """Scores that are already clean (M/T produces a terminating decimal)
+    must not be altered by rounding."""
+    features = [
+        {"id": "f1", "label": "F1", "type": "boolean",
+         "student_field": "f1", "required": True},
+        {"id": "f2", "label": "F2", "type": "boolean",
+         "student_field": "f2", "required": True},
+        {"id": "f3", "label": "F3", "type": "boolean",
+         "student_field": "f3", "required": True},
+        {"id": "f4", "label": "F4", "type": "boolean",
+         "student_field": "f4", "required": True},
+    ]
+    scholarship = make_scholarship(features)
+    profile_vector = {f"f{i+1}": True for i in range(4)}
+
+    result = score_one(profile_vector, scholarship)
+
+    # (4/4)*100 = 100.0 exactly
+    assert result.score == 100.0
+    assert result.match_label == "Strong Match"
+
+
+def test_rounding_at_band_boundary_after_round():
+    """Match labels are assigned on the rounded score, not the raw float.
+    9 of 10 features matched → exactly 90.0 → Strong Match."""
+    features = [
+        {"id": f"f{i}", "label": f"F{i}", "type": "boolean",
+         "student_field": f"f{i}", "required": True}
+        for i in range(10)
+    ]
+    scholarship_all = make_scholarship(features, scholarship_id="s-all")
+    scholarship_nine = make_scholarship(features, scholarship_id="s-nine")
+
+    # All 10 match → 100.0
+    result_all = score_one({f"f{i}": True for i in range(10)}, scholarship_all)
+    assert result_all.score == 100.0
+    assert result_all.match_label == "Strong Match"
+
+    # 9 of 10 match → exactly 90.0 → Strong Match
+    result_nine = score_one({f"f{i}": (i != 9) for i in range(10)}, scholarship_nine)
+    assert result_nine.score == 90.0
+    assert result_nine.match_label == "Strong Match"
+
