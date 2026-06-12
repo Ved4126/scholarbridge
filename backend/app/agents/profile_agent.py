@@ -15,6 +15,7 @@ class StudentProfile(BaseModel):
     home_city: str | None = None
     visa_type: str = Field(min_length=1)
     enrollment_status: Literal["full_time", "part_time"]
+    first_generation_student: bool | None = None
 
     # Academic
     degree_level: Literal["undergrad", "masters", "phd", "postdoc"]
@@ -97,7 +98,8 @@ class StudentProfile(BaseModel):
             "dependents": self.dependents,
             "willing_to_return_home_country": self.willing_to_return_home_country,
             "languages": self.languages,
-            "preferred_scholarship_types": self.preferred_scholarship_types
+            "preferred_scholarship_types": self.preferred_scholarship_types,
+            "first_generation_student": self.first_generation_student
         }
 
     def completeness_score(self) -> float:

@@ -9,21 +9,35 @@
   "currency": "USD",
   "deadline": "2099-12-31",
   "award_year": 2099,
-  "degree_levels": ["masters", "phd"],
-  "eligible_nationalities": ["Any"],
-  "eligible_visa_types": ["F-1", "J-1"],
-  "fields_of_study": ["Computer Science", "Engineering"],
+  "degree_levels": [
+    "masters",
+    "phd"
+  ],
+  "eligible_nationalities": [
+    "Any"
+  ],
+  "eligible_visa_types": [
+    "F-1",
+    "J-1"
+  ],
+  "fields_of_study": [
+    "Computer Science",
+    "Engineering"
+  ],
   "description": "This is a test scholarship record designed purely as a development fixture. It should never appear in production. It is used to test the loader and scoring functions.",
   "eligibility_text": "Must be a student in CS or Engineering. Must have a high GPA. Must have entrepreneurship experience.",
   "feature_manifest": {
-    "total_features": 5,
+    "total_features": 6,
     "features": [
       {
         "id": "degree_level",
         "label": "Eligible degree levels",
         "type": "enum",
         "student_field": "degree_level",
-        "values": ["masters", "phd"],
+        "values": [
+          "masters",
+          "phd"
+        ],
         "required": true
       },
       {
@@ -46,6 +60,13 @@
         "type": "boolean",
         "student_field": "entrepreneurship_experience",
         "required": true
+      },
+      {
+        "id": "first_generation_student",
+        "label": "First-generation student",
+        "type": "boolean",
+        "student_field": "first_generation_student",
+        "required": false
       },
       {
         "id": "age_limit",
