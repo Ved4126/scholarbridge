@@ -149,8 +149,13 @@ def get_cached_score(profile_id: str) -> list[ScoringResult]:
         The previously cached list of ScoringResult objects.
 
     Raises:
-        HTTPException 404 if no cached result exists for this profile.
+        HTTPException 404 if no cached result exists for this profile or if profile is deleted.
     """
+    profile = database.get_profile(profile_id)
+    if profile is None:
+        _score_cache.pop(profile_id, None)
+        raise HTTPException(status_code=404, detail="Profile not found")
+
     cached = _score_cache.get(profile_id)
     if cached is None:
         raise HTTPException(status_code=404, detail="Cached score not found")
