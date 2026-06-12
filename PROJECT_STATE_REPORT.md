@@ -2,72 +2,80 @@
 
 ## Current Commit
 
-Pending Phase 6 commit
+Pending Phase 9 commit
 
 ## Tags
 
 - v0.1-foundation
 - v0.2-prefilters
-- v0.3-scorer pending
+- v0.3-scorer (pending)
 
 ## Completed Phases
 
-✅ Phase 0 Repository Audit  
-✅ Phase 1 FastAPI Foundation  
-✅ Phase 2 Profile Agent  
-✅ Phase 3 Scholarship Loader  
-✅ Phase 4 Feature Matcher  
-✅ Phase 5 Hard Pre-Filters  
-✅ Phase 6 M/T Scorer  
+✅ Phase 0 Repository Audit
+✅ Phase 1 FastAPI Foundation
+✅ Phase 2 Profile Agent
+✅ Phase 3 Scholarship Loader
+✅ Phase 4 Feature Matcher
+✅ Phase 5 Hard Pre-Filters
+✅ Phase 6 M/T Scorer
+✅ Phase 7 API Routes
+✅ Phase 8 Testing
+✅ Phase 9 Documentation
 
 ## Current Test Status
 
-76 passing tests
+107 passing tests, 0 failing
 
 ## Current MVP Progress
 
-~80%
+~95% — all backend phases complete. Frontend not started.
 
 ## Latest Completed Work
 
-Phase 6 implemented the deterministic M/T scoring pipeline.
+Phase 9 wrote developer-facing documentation:
 
-Implemented:
+- `docs/SETUP.md` — clone, venv, install, run server, run tests, add scholarships, troubleshooting
+- `docs/API.md` — complete reference for all 9 MVP endpoints with curl examples and response schemas
+- `README.md` — project overview, phase status, quick start, links to all docs, dev rules
 
-- `ScoringResult`
-- `FeatureMatchDetail`
-- `score_one()`
-- `score_all()`
-- `compute_match_label()`
-- gap analysis
-- action checklist
-- below-40 score filtering
-- max 20 result cap
-- hard pre-filter integration before scoring
+## Score Rounding
+
+Score rounding is verified at 1 decimal place via explicit tests in `tests/test_scorer.py` (section 18).
+Formula: `Score = round((M / T) * 100, 1)`.
 
 ## Current Architecture Notes
 
-The codebase currently uses:
+The codebase uses these internal names — do not rename without reading AI_RULES.md:
 
-- `ScholarshipRecord`
-- `ScholarshipFeature`
-- `apply_prefilters()`
+- `ScholarshipRecord` (not `Scholarship`)
+- `ScholarshipFeature` (not `FeatureSpec`)
+- `apply_prefilters()` (not `apply_hard_filters()`)
 
-The documentation sometimes refers to:
+## API Endpoints (Current)
 
-- `Scholarship`
-- `FeatureSpec`
-- `apply_hard_filters()`
-
-For now, continue using the existing working code names and do not rewrite working code just for naming alignment.
+| Method | Path | Status |
+|---|---|---|
+| GET | /health | ✅ |
+| POST | /profile/ | ✅ |
+| GET | /profile/{id} | ✅ |
+| PATCH | /profile/{id} | ✅ |
+| DELETE | /profile/{id} | ✅ |
+| GET | /profile/{id}/completeness | ✅ |
+| POST | /score/all | ✅ |
+| POST | /score/single | ✅ |
+| GET | /score/cached/{id} | ✅ |
 
 ## Current Branch
 
 main
 
-## Next Phase
+## Next Recommended Phase
 
-Phase 7 — API Routes
+Phase 10 — Frontend/UI Planning
+
+> Note: Frontend development requires a governance review per AI_RULES.md before starting.
+> The backend API must remain stable before any frontend work begins.
 
 ## Important Rules for Next Agent
 
@@ -87,11 +95,10 @@ Do not introduce:
 - scraping
 - PostgreSQL
 - Redis
-- frontend
 - auth
 - analytics
 - LangGraph
 - CrewAI
 - multi-agent systems
 
-Stop after Phase 7 and produce a phase report.
+Stop after each phase and produce a phase report. Wait for explicit human approval before proceeding.

@@ -1,62 +1,140 @@
-# ScholarBridge Backend MVP
+# ScholarBridge
 
-ScholarBridge is an automated scholarship matching system. This repository contains the Backend MVP, which focuses exclusively on the core logic: ingesting a student profile, evaluating eligibility via hard pre-filters, calculating match/tractability scores, and returning a ranked list of recommended scholarships.
+> **Scholarship discovery for international students in the US.**
+> Rule-based eligibility scoring. Transparent gap analysis. Zero ML during MVP.
+
+---
+
+## What is ScholarBridge?
+
+ScholarBridge is a backend API that helps international students discover scholarships they
+are genuinely likely to qualify for. It collects a structured student profile, evaluates all
+scholarships against hard eligibility filters and a deterministic match score, and returns a
+ranked list of results with gap analysis and action checklist — telling the student exactly what
+they qualify for and what they still need to prepare.
+
+---
 
 ## Current MVP Status
-**Status:** MVP Complete (Phase 9)
-All core business logic, matching engines, API endpoints, and integration tests have been implemented. The MVP is fully functional using in-memory data structures. It is currently tagged at `v1.0-mvp`.
 
-## Architecture Overview
-The backend is built with FastAPI and follows a strict separation of concerns:
-- **API Layer (`backend/app/api/`)**: Defines FastAPI routers and Pydantic models. Zero business logic.
-- **Scoring Engine (`backend/app/scorer/`)**: Handles all logic for matching, filtering, and scoring student profiles against scholarships.
-- **Profile Agent (`backend/app/agents/profile_agent.py`)**: Manages the ingestion and validation of student data, converting it into a standardized feature vector.
-- **Data Layer (`backend/app/db/database.py`)**: MVP in-memory persistence for profiles and score caching.
+**Phase 9 complete — documentation written.**
 
-## Folder Structure
-```
-scholarbridge-repo/
-├── backend/
-│   └── app/
-│       ├── agents/          # Profile logic
-│       ├── api/             # FastAPI routers
-│       ├── db/              # In-memory database
-│       ├── scorer/          # Core scoring engine
-│       └── main.py          # FastAPI application entry point
-├── data/
-│   └── scholarships/        # JSON catalogue of scholarships
-├── docs/                    # Extensive documentation
-├── scripts/                 # Utility scripts (e.g., data loaders)
-└── tests/                   # Test suite (pytest)
-```
+| Phase | Name | Status |
+|---|---|---|
+| Phase 0 | Repository Inspection | ✅ Complete |
+| Phase 1 | FastAPI Foundation | ✅ Complete |
+| Phase 2 | Student Profile Model | ✅ Complete |
+| Phase 3 | Scholarship Loader | ✅ Complete |
+| Phase 4 | Feature Matcher | ✅ Complete |
+| Phase 5 | Hard Pre-Filters | ✅ Complete |
+| Phase 6 | M/T Scorer | ✅ Complete |
+| Phase 7 | API Routes | ✅ Complete |
+| Phase 8 | Testing | ✅ Complete |
+| Phase 9 | Documentation | ✅ Complete |
+| Phase 10 | Frontend/UI | 🔲 Not started |
 
-## Setup Instructions
-Please refer to [docs/SETUP.md](docs/SETUP.md) for detailed instructions on Python version recommendations, virtual environment setup, and dependency management.
+**Tests:** 107 passing, 0 failing.
 
-## Running the API
-From the repository root, start the FastAPI server:
+---
+
+## What the backend currently supports
+
+- `POST /profile/` — create a student profile (30+ fields, Pydantic v2 validated)
+- `GET /profile/{id}` — retrieve a stored profile
+- `PATCH /profile/{id}` — update profile fields
+- `DELETE /profile/{id}` — delete a profile
+- `GET /profile/{id}/completeness` — return profile completeness percentage
+- `POST /score/all` — score all scholarships against a profile (pre-filtered, ranked, max 20)
+- `POST /score/single` — score one specific scholarship against a profile
+- `GET /score/cached/{id}` — retrieve last cached scoring result
+- `GET /health` — system health check
+
+---
+
+## What is intentionally out of scope during MVP
+
+| Out of Scope | Reason |
+|---|---|
+| Frontend / UI | Phase 10+ |
+| User authentication | No multi-user accounts yet |
+| PostgreSQL persistence | In-memory store is sufficient for MVP |
+| Redis caching | Not needed at MVP scale |
+| ML ranking (LightGBM) | No training data exists yet |
+| Vector search (Pinecone) | No embeddings generated yet |
+| Web scraping | Static JSON data only |
+| Agent orchestration (LangGraph, CrewAI) | Single-agent MVP |
+| Analytics dashboard | No users yet |
+| Email / notifications | Post-MVP |
+
+See [docs/PRD.md](docs/PRD.md) § 5 for the full non-goals list.
+
+---
+
+## Quick Start
+
 ```bash
-.venv/bin/uvicorn backend.app.main:app --reload
-```
-The API documentation (Swagger UI) is available at `http://127.0.0.1:8000/docs`.
+# 1. Clone
+git clone https://github.com/Ved4126/scholarbridge.git
+cd scholarbridge
 
-## Running Tests
-Run the full pytest suite (107 tests) from the project root:
+# 2. Create and activate virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Copy environment variables template
+cp .env.example .env
+
+# 5. Run the server
+python3 -m uvicorn backend.app.main:app --reload
+
+# 6. Open Swagger UI
+open http://127.0.0.1:8000/docs
+
+# 7. Run tests
+python3 -m pytest tests/ -v
+```
+
+---
+
+## Documentation
+
+| Document | Purpose |
+|---|---|
+| [docs/SETUP.md](docs/SETUP.md) | Clone, install, run, add scholarship records, troubleshoot |
+| [docs/API.md](docs/API.md) | All 9 endpoints — request bodies, curl examples, response schemas |
+| [docs/PRD.md](docs/PRD.md) | Product requirements, user stories, success criteria |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design, folder structure, data flow |
+| [docs/PLAN.md](docs/PLAN.md) | Phase-by-phase execution plan |
+| [docs/AI_RULES.md](docs/AI_RULES.md) | AI governance rules — read before any code change |
+
+---
+
+## Development Rules Summary
+
+1. **Read first.** Before any code change, read `docs/AI_RULES.md`, `docs/PRD.md`, `docs/ARCHITECTURE.md`, and `docs/PLAN.md`.
+2. **One phase at a time.** Do not skip phases or start the next phase without explicit approval.
+3. **No business logic in routes.** `api/` routers delegate all logic to `scorer/` and `agents/`.
+4. **No rewriting working code.** Minimal-invasive changes only.
+5. **Tests must pass.** `python3 -m pytest tests/ -v` must show 0 failures before any commit.
+6. **No prohibited systems.** ML, PostgreSQL, Redis, LangGraph, and web scraping are banned until MVP is declared complete.
+
+See [docs/AI_RULES.md](docs/AI_RULES.md) for the full list.
+
+---
+
+## Test Command
+
 ```bash
-PYTHONPATH=. .venv/bin/pytest tests/ -v
+python3 -m pytest tests/ -v
 ```
 
-## Endpoint Overview
-- **Profile**: `POST /profile`, `GET /profile/{id}`, `PATCH /profile/{id}`, `DELETE /profile/{id}`, `GET /profile/{id}/completeness`
-- **Scorer**: `POST /score/all`, `POST /score/single`, `GET /score/cached/{id}`
-- **Health**: `GET /health`
-*See [docs/API_REFERENCE.md](docs/API_REFERENCE.md) for detailed request/response schemas.*
+Expected: **107 passed, 0 failed**
 
-## Development Workflow
-Development is currently driven by strict adherence to the MVP scope. See `docs/AI_RULES.md` and `docs/PLAN.md` for guidelines.
+---
 
-## Current Limitations
-The system currently uses in-memory storage (volatile across restarts), has no authentication, and no frontend. AI/ML ranking and real database persistence are out-of-scope for this MVP. See [docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md) for full details.
+## License
 
-## Next Roadmap
-The post-MVP roadmap focuses on production hardening (PostgreSQL, Redis), adding a Next.js frontend, authentication, and eventually ML/Vector search integration. See [docs/POST_MVP_ROADMAP.md](docs/POST_MVP_ROADMAP.md) for details.
+MIT — see [LICENSE](LICENSE).
