@@ -124,7 +124,9 @@ python3 -m pytest tests/ -v
 | [docs/PRD.md](docs/PRD.md) | Product requirements, user stories, success criteria |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design, folder structure, data flow |
 | [docs/PLAN.md](docs/PLAN.md) | Phase-by-phase execution plan |
+| [docs/NEXT_PHASES.md](docs/NEXT_PHASES.md) | Roadmap for future development phases beyond MVP frontend |
 | [docs/AI_RULES.md](docs/AI_RULES.md) | AI governance rules — read before any code change |
+
 
 ---
 

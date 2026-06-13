@@ -77,7 +77,10 @@ main
 
 ## Next Recommended Phase
 
-Phase 11 — Frontend QA and Polish
+Phase 11 — Real Scholarship Data Seed
+
+> Note: Detailed roadmaps and instructions for subsequent phases are documented in [docs/NEXT_PHASES.md](docs/NEXT_PHASES.md).
+
 
 
 ## Important Rules for Next Agent
