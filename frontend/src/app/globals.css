@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F8FAFC; /* Soft off-white */
+  --foreground: #0F172A; /* Near-black */
+  --primary: #0F2D54;    /* Deep navy */
+  --primary-hover: #1E3A5F;
+  --accent: #059669;     /* Emerald green */
+  --accent-hover: #047857;
+  --border: #E2E8F0;     /* Light gray */
+  --card-bg: #FFFFFF;    /* Pure white */
+  --text-muted: #64748B; /* Slate */
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
