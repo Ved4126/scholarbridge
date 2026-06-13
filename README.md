@@ -125,7 +125,9 @@ python3 -m pytest tests/ -v
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design, folder structure, data flow |
 | [docs/PLAN.md](docs/PLAN.md) | Phase-by-phase execution plan |
 | [docs/NEXT_PHASES.md](docs/NEXT_PHASES.md) | Roadmap for future development phases beyond MVP frontend |
+| [docs/SCHOLARSHIP_DATA_GUIDE.md](docs/SCHOLARSHIP_DATA_GUIDE.md) | Standards, criteria, and guidelines for authoring real scholarship records |
 | [docs/AI_RULES.md](docs/AI_RULES.md) | AI governance rules — read before any code change |
+
 
 
 ---

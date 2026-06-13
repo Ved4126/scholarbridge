@@ -20,9 +20,11 @@
 Add the first 10–20 real manually verified scholarship JSON files.
 
 ### Scope
+* All research, authoring, review, and validation of real scholarship files must strictly follow [docs/SCHOLARSHIP_DATA_GUIDE.md](docs/SCHOLARSHIP_DATA_GUIDE.md).
 * Use only official scholarship pages.
 * Add JSON files under `data/scholarships/international/`.
 * Validate files against `data/schema.json`.
+
 * Include `source_url`, `deadline`, eligibility rules, `feature_manifest`, and output requirements.
 * Keep dataset small and high quality.
 * No scraping.

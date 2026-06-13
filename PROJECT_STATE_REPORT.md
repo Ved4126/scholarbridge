@@ -79,7 +79,8 @@ main
 
 Phase 11 — Real Scholarship Data Seed
 
-> Note: Detailed roadmaps and instructions for subsequent phases are documented in [docs/NEXT_PHASES.md](docs/NEXT_PHASES.md).
+> Note: Detailed roadmaps and instructions for subsequent phases are documented in [docs/NEXT_PHASES.md](docs/NEXT_PHASES.md). Data curation rules and schemas for Phase 11 are defined in [docs/SCHOLARSHIP_DATA_GUIDE.md](docs/SCHOLARSHIP_DATA_GUIDE.md).
+
 
 
 
