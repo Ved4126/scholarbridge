@@ -31,9 +31,25 @@ they qualify for and what they still need to prepare.
 | Phase 7 | API Routes | ✅ Complete |
 | Phase 8 | Testing | ✅ Complete |
 | Phase 9 | Documentation | ✅ Complete |
-| Phase 10 | Frontend/UI | 🔲 Not started |
+| Phase 10 | Frontend/UI | ✅ Complete |
 
 **Tests:** 107 passing, 0 failing.
+
+---
+
+## Running the Frontend App
+
+The MVP frontend is located in the `frontend/` directory.
+
+To install and run:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The frontend will run at [http://localhost:3000](http://localhost:3000). Ensure the FastAPI backend is running at [http://localhost:8000](http://localhost:8000).
+
 
 ---
 
