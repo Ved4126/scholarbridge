@@ -138,12 +138,14 @@ export default function ResultsPage() {
         ) : (
           <div className="space-y-6">
             <p className="text-sm font-semibold text-slate-700">
-              {results.length} scholarship{results.length > 1 ? "s" : ""} matched your profile
+              {results.filter(r => r.scholarship_id !== "test_scholarship").length} scholarship{results.filter(r => r.scholarship_id !== "test_scholarship").length !== 1 ? "s" : ""} matched your profile
             </p>
             <div className="space-y-6">
-              {results.map((result) => (
-                <ScholarshipCard key={result.scholarship_id} result={result} />
-              ))}
+              {results
+                .filter((result) => result.scholarship_id !== "test_scholarship")
+                .map((result) => (
+                  <ScholarshipCard key={result.scholarship_id} result={result} />
+                ))}
             </div>
           </div>
         )}

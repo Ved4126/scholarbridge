@@ -33,12 +33,13 @@ Pending Phase 9 commit
 
 100% — Backend and Frontend MVP complete. Stable with first 5 real scholarships.
 
-## Latest Completed Work
-
-Phase 10 implemented a premium Next.js, Tailwind CSS, and TypeScript frontend app supporting:
-- Home page with high-stakes hero layout and trust indicators.
-- Multi-section Profile form mapping Pydantic model with validation and completeness feedback.
-- Results page containing sorted scholarship match cards, collapsible gap analysis, and action checklists.
+Phase 12 upgraded the Results page UX and scholarship cards:
+- Built a premium scholarship card design featuring clear organization headers, circular score indicators, and a deterministic fit explanation.
+- Upgraded explainability: replaced generic text with detailed explanations based on matched compatibilities.
+- Rendered explicit, visible gap analysis listings detailing required parameters vs. submitted values.
+- Built interactive, checkbox-driven action item checklists showing specific preparation requirements (e.g., transcripts, essays).
+- Hid the internal development fixture `test_scholarship` from user results.
+- Maintained strict accessibility standards (contrast, accessible labels) and fully responsive layouts.
 
 
 - `docs/SETUP.md` — clone, venv, install, run server, run tests, add scholarships, troubleshooting
