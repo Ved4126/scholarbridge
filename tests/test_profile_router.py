@@ -31,18 +31,21 @@ VALID_PROFILE = {
     "date_of_birth": "1998-03-15",
     "gender": "female",
     "nationality": "IN",
-    "dual_citizenship": None,
     "home_country": "IN",
     "home_city": "Mumbai",
+    "residence_country": "US",
+    "residence_state": "MA",
+    "residence_city": "Cambridge",
     "visa_type": "F-1",
     "enrollment_status": "full_time",
     "first_generation_student": True,
     "degree_level": "masters",
     "field_of_study": "Computer Science",
-    "major": "Machine Learning",
     "minor": None,
     "university_name": "MIT",
+    "university_city": "Cambridge",
     "university_state": "MA",
+    "university_country": "US",
     "gpa": 3.8,
     "gpa_scale": 4.0,
     "gre": None,
@@ -52,9 +55,9 @@ VALID_PROFILE = {
     "sat": None,
     "act": None,
     "expected_graduation_year": 2026,
-    "previous_degrees": None,
     "published_research": True,
     "research_papers": ["Neural Scaling Laws (2024)"],
+    "citations_count": 10,
     "conference_presentations": 1,
     "patents": 0,
     "academic_awards": ["Dean's List 2023"],
@@ -68,11 +71,6 @@ VALID_PROFILE = {
     "family_income_bracket": "40k-80k",
     "current_funding_sources": ["TA stipend"],
     "dependents": 0,
-    "career_goals": "AI research in healthcare",
-    "intended_industry": "Healthcare AI",
-    "willing_to_return_home_country": True,
-    "languages": ["English", "Hindi"],
-    "preferred_scholarship_types": ["merit-based"],
 }
 
 
@@ -138,12 +136,12 @@ def test_patch_profile_updates_selected_fields():
 
     patch_resp = client.patch(
         f"/profile/{profile_id}",
-        json={"gpa": 3.9, "career_goals": "AI ethics research"},
+        json={"gpa": 3.9, "home_city": "Pune"},
     )
     assert patch_resp.status_code == 200
     body = patch_resp.json()
     assert body["gpa"] == 3.9
-    assert body["career_goals"] == "AI ethics research"
+    assert body["home_city"] == "Pune"
     # Other fields must not change
     assert body["full_name"] == "Priya Sharma"
 

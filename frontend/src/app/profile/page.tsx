@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { Navbar } from "@/components/Navbar";
 import { ProfileFormSection } from "@/components/ProfileFormSection";
-import { FormProgress } from "@/components/FormProgress";
 import { ErrorAlert } from "@/components/ErrorAlert";
 import { createProfile, scoreAll, ProfileApiError } from "@/lib/api";
 import { Loader2 } from "lucide-react";
@@ -17,30 +16,33 @@ interface ProfileFormData {
   date_of_birth: string;
   gender: string;
   nationality: string;
-  dual_citizenship: string;
   home_country: string;
   home_city: string;
-  visa_type: string;
-  enrollment_status: "full_time" | "part_time";
-  first_generation_student: boolean | string;
+  residence_country: string;
+  residence_state: string;
+  residence_city: string;
+  university_name: string;
   degree_level: "undergrad" | "masters" | "phd" | "postdoc";
   field_of_study: string;
-  major: string;
   minor: string;
-  university_name: string;
+  university_city: string;
   university_state: string;
+  university_country: string;
   gpa: number;
   gpa_scale: number;
+  expected_graduation_year: number;
+  first_generation_student: boolean | string;
   gre: string | number;
   gmat: string | number;
   toefl: string | number;
   ielts: string | number;
   sat: string | number;
   act: string | number;
-  expected_graduation_year: number;
-  previous_degrees: string;
+  visa_type: string;
+  enrollment_status: "full_time" | "part_time";
   published_research: boolean | string;
   research_papers: string;
+  citations_count: string | number;
   conference_presentations: number;
   patents: number;
   academic_awards: string;
@@ -54,11 +56,6 @@ interface ProfileFormData {
   family_income_bracket: string;
   current_funding_sources: string;
   dependents: string | number;
-  career_goals: string;
-  intended_industry: string;
-  willing_to_return_home_country: boolean | string;
-  languages: string;
-  preferred_scholarship_types: string;
 }
 
 export default function ProfileFormPage() {
@@ -69,7 +66,6 @@ export default function ProfileFormPage() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<ProfileFormData>({
     defaultValues: {
@@ -77,30 +73,33 @@ export default function ProfileFormPage() {
       date_of_birth: "",
       gender: "",
       nationality: "",
-      dual_citizenship: "",
       home_country: "",
       home_city: "",
-      visa_type: "",
-      enrollment_status: "full_time",
-      first_generation_student: false,
+      residence_country: "",
+      residence_state: "",
+      residence_city: "",
+      university_name: "",
       degree_level: "undergrad",
       field_of_study: "",
-      major: "",
       minor: "",
-      university_name: "",
+      university_city: "",
       university_state: "",
+      university_country: "",
       gpa: 4.0,
       gpa_scale: 4.0,
+      expected_graduation_year: new Date().getFullYear() + 2,
+      first_generation_student: "false",
       gre: "",
       gmat: "",
       toefl: "",
       ielts: "",
       sat: "",
       act: "",
-      expected_graduation_year: new Date().getFullYear() + 2,
-      previous_degrees: "",
-      published_research: false,
+      visa_type: "",
+      enrollment_status: "full_time",
+      published_research: "false",
       research_papers: "",
+      citations_count: "",
       conference_presentations: 0,
       patents: 0,
       academic_awards: "",
@@ -109,50 +108,13 @@ export default function ProfileFormPage() {
       volunteer_hours: "",
       sports_achievements: "",
       artistic_achievements: "",
-      entrepreneurship_experience: false,
+      entrepreneurship_experience: "false",
       financial_need_level: "medium",
       family_income_bracket: "",
       current_funding_sources: "",
       dependents: "",
-      career_goals: "",
-      intended_industry: "",
-      willing_to_return_home_country: false,
-      languages: "",
-      preferred_scholarship_types: "",
     },
   });
-
-  // Watch fields to compute section completion dynamically
-  const formValues = watch();
-
-  const getCompletedSections = () => {
-    let completed = 0;
-    
-    // Personal Section Checklist
-    if (formValues.full_name && formValues.date_of_birth && formValues.nationality && formValues.home_country) {
-      completed += 1;
-    }
-    // Academic Section Checklist
-    if (formValues.degree_level && formValues.field_of_study && formValues.major && formValues.university_name && formValues.university_state && formValues.gpa !== undefined && formValues.gpa_scale !== undefined && formValues.expected_graduation_year) {
-      completed += 1;
-    }
-    // Visa & Enrollment Section Checklist
-    if (formValues.visa_type && formValues.enrollment_status) {
-      completed += 1;
-    }
-    // Achievements Section Checklist
-    if (formValues.published_research !== undefined && formValues.conference_presentations !== undefined && formValues.patents !== undefined && formValues.entrepreneurship_experience !== undefined) {
-      completed += 1;
-    }
-    // Financial Need Section Checklist
-    if (formValues.financial_need_level) {
-      completed += 1;
-    }
-    // Preferences Section Checklist (Always completed since all are optional)
-    completed += 1;
-
-    return completed;
-  };
 
   const onSubmit = async (data: ProfileFormData) => {
     setIsSubmitting(true);
@@ -170,7 +132,6 @@ export default function ProfileFormPage() {
         published_research: data.published_research === "true" || data.published_research === true,
         entrepreneurship_experience: data.entrepreneurship_experience === "true" || data.entrepreneurship_experience === true,
         first_generation_student: data.first_generation_student === "true" || data.first_generation_student === true,
-        willing_to_return_home_country: data.willing_to_return_home_country === "true" || data.willing_to_return_home_country === true,
       };
 
       // Handle GPA validation check
@@ -178,14 +139,58 @@ export default function ProfileFormPage() {
         throw new Error("GPA cannot be greater than GPA Scale.");
       }
 
+      // Clean/sanitize enrollment_status
+      const enrollmentStatus = data.enrollment_status;
+      if (enrollmentStatus) {
+        const cleaned = enrollmentStatus.toLowerCase().replace("-", "_").trim();
+        if (cleaned === "full_time" || cleaned === "fulltime") {
+          payload.enrollment_status = "full_time";
+        } else if (cleaned === "part_time" || cleaned === "parttime") {
+          payload.enrollment_status = "part_time";
+        } else {
+          payload.enrollment_status = enrollmentStatus;
+        }
+      }
+
+      // Clean/sanitize visa_type
+      const visaType = data.visa_type;
+      if (visaType) {
+        const trimmed = visaType.trim();
+        if (trimmed.toLowerCase() === "f1") {
+          payload.visa_type = "F-1";
+        } else if (trimmed.toLowerCase() === "j1") {
+          payload.visa_type = "J-1";
+        } else if (trimmed.toLowerCase() === "h1b") {
+          payload.visa_type = "H-1B";
+        } else {
+          payload.visa_type = trimmed;
+        }
+      }
+
+      // Clean/sanitize degree_level
+      const degreeLevel = data.degree_level;
+      if (degreeLevel) {
+        const cleaned = degreeLevel.toLowerCase().trim();
+        if (cleaned.includes("undergrad")) {
+          payload.degree_level = "undergrad";
+        } else if (cleaned.includes("master")) {
+          payload.degree_level = "masters";
+        } else if (cleaned.includes("phd")) {
+          payload.degree_level = "phd";
+        } else if (cleaned.includes("postdoc")) {
+          payload.degree_level = "postdoc";
+        } else {
+          payload.degree_level = degreeLevel;
+        }
+      }
+
       // Convert optional string inputs to appropriate types
       if (data.gender === "") payload.gender = null;
-      if (data.dual_citizenship === "") payload.dual_citizenship = null;
       if (data.home_city === "") payload.home_city = null;
+      if (data.residence_state === "") payload.residence_state = null;
+      if (data.residence_city === "") payload.residence_city = null;
       if (data.minor === "") payload.minor = null;
       if (data.family_income_bracket === "") payload.family_income_bracket = null;
-      if (data.career_goals === "") payload.career_goals = null;
-      if (data.intended_industry === "") payload.intended_industry = null;
 
       // Numbers
       payload.gre = data.gre ? parseFloat(data.gre as string) : null;
@@ -196,10 +201,10 @@ export default function ProfileFormPage() {
       payload.act = data.act ? parseFloat(data.act as string) : null;
       payload.volunteer_hours = data.volunteer_hours ? parseInt(data.volunteer_hours as string) : null;
       payload.dependents = data.dependents ? parseInt(data.dependents as string) : null;
+      payload.citations_count = data.citations_count ? parseInt(data.citations_count as string) : null;
 
       // Handle lists (comma separated values parsed to string lists)
       const parseList = (str: string) => str ? str.split(",").map(s => s.trim()).filter(Boolean) : [];
-      payload.previous_degrees = data.previous_degrees ? parseList(data.previous_degrees) : null;
       payload.research_papers = data.research_papers ? parseList(data.research_papers) : null;
       payload.academic_awards = parseList(data.academic_awards);
       payload.previous_scholarships = parseList(data.previous_scholarships);
@@ -207,8 +212,8 @@ export default function ProfileFormPage() {
       payload.sports_achievements = parseList(data.sports_achievements);
       payload.artistic_achievements = parseList(data.artistic_achievements);
       payload.current_funding_sources = parseList(data.current_funding_sources);
-      payload.languages = parseList(data.languages);
-      payload.preferred_scholarship_types = parseList(data.preferred_scholarship_types);
+
+      console.log("Constructed payload for submission:", payload);
 
       // Call profile creation API
       const profileResult = await createProfile(payload);
@@ -225,10 +230,23 @@ export default function ProfileFormPage() {
       // Redirect to results
       router.push("/results");
     } catch (err: unknown) {
-      console.error(err);
+      console.error("Profile submission error:", err);
       const profileApiErr = err as ProfileApiError;
       if (profileApiErr.details) {
-        setApiError(Array.isArray(profileApiErr.details) ? JSON.stringify(profileApiErr.details, null, 2) : String(profileApiErr.details));
+        let errorMsg = "Validation details:\n";
+        if (Array.isArray(profileApiErr.details)) {
+          const detailStrings = (profileApiErr.details as Array<{ loc?: unknown[]; msg?: string }>).map((d) => {
+            const fieldPath = Array.isArray(d.loc) ? d.loc.filter((loc) => loc !== "body").join(".") : "";
+            const prefix = fieldPath ? `"${fieldPath}": ` : "";
+            return `${prefix}${d.msg || JSON.stringify(d)}`;
+          });
+          errorMsg += detailStrings.join("\n");
+        } else if (typeof profileApiErr.details === "object") {
+          errorMsg += JSON.stringify(profileApiErr.details, null, 2);
+        } else {
+          errorMsg += String(profileApiErr.details);
+        }
+        setApiError(errorMsg);
       } else {
         setApiError(profileApiErr.message || "An unexpected network error occurred.");
       }
@@ -248,9 +266,6 @@ export default function ProfileFormPage() {
           </p>
         </div>
 
-        <div className="mb-8">
-          <FormProgress completed={getCompletedSections()} total={6} />
-        </div>
 
         {apiError && (
           <ErrorAlert message={apiError} onRetry={handleSubmit(onSubmit)} />
@@ -296,12 +311,18 @@ export default function ProfileFormPage() {
               <label htmlFor="gender" className="text-sm font-semibold text-slate-700">
                 Gender <span className="text-xs text-slate-500 font-normal">(optional)</span>
               </label>
-              <input
+              <select
                 id="gender"
-                type="text"
                 {...register("gender")}
-                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
-              />
+                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none bg-white"
+              >
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="non_binary">Non-binary</option>
+                <option value="other">Other</option>
+                <option value="prefer_not_to_say">Prefer not to say</option>
+              </select>
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -319,20 +340,6 @@ export default function ProfileFormPage() {
               {errors.nationality && (
                 <span className="text-xs text-red-600">{errors.nationality.message}</span>
               )}
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="dual_citizenship" className="text-sm font-semibold text-slate-700">
-                Dual Citizenship <span className="text-xs text-slate-500 font-normal">(optional)</span>
-              </label>
-              <input
-                id="dual_citizenship"
-                type="text"
-                maxLength={2}
-                placeholder="e.g. CA, GB"
-                {...register("dual_citizenship", { maxLength: 2 })}
-                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none uppercase"
-              />
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -361,6 +368,48 @@ export default function ProfileFormPage() {
                 className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
               />
             </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="residence_country" className="text-sm font-semibold text-slate-700">
+                Current Residence Country <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="residence_country"
+                type="text"
+                placeholder="e.g. United States"
+                {...register("residence_country", { required: "Current residence country is required" })}
+                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+              />
+              {errors.residence_country && (
+                <span className="text-xs text-red-600">{errors.residence_country.message}</span>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="residence_state" className="text-sm font-semibold text-slate-700">
+                Current Residence State <span className="text-xs text-slate-500 font-normal">(optional)</span>
+              </label>
+              <input
+                id="residence_state"
+                type="text"
+                placeholder="e.g. CA"
+                {...register("residence_state")}
+                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="residence_city" className="text-sm font-semibold text-slate-700">
+                Current Residence City <span className="text-xs text-slate-500 font-normal">(optional)</span>
+              </label>
+              <input
+                id="residence_city"
+                type="text"
+                placeholder="e.g. Stanford"
+                {...register("residence_city")}
+                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+              />
+            </div>
           </ProfileFormSection>
 
           {/* Section 2: Academic */}
@@ -368,6 +417,21 @@ export default function ProfileFormPage() {
             title="2. Academic Qualifications"
             description="Your current degree program, university details, and GPA scores."
           >
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="university_name" className="text-sm font-semibold text-slate-700">
+                University Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="university_name"
+                type="text"
+                {...register("university_name", { required: "University name is required" })}
+                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+              />
+              {errors.university_name && (
+                <span className="text-xs text-red-600">{errors.university_name.message}</span>
+              )}
+            </div>
+
             <div className="flex flex-col gap-1.5">
               <label htmlFor="degree_level" className="text-sm font-semibold text-slate-700">
                 Degree Level <span className="text-red-500">*</span>
@@ -386,32 +450,17 @@ export default function ProfileFormPage() {
 
             <div className="flex flex-col gap-1.5">
               <label htmlFor="field_of_study" className="text-sm font-semibold text-slate-700">
-                Field of Study <span className="text-red-500">*</span>
+                Major / Field of Study <span className="text-red-500">*</span>
               </label>
               <input
                 id="field_of_study"
                 type="text"
                 placeholder="e.g. Computer Science"
-                {...register("field_of_study", { required: "Field of study is required" })}
+                {...register("field_of_study", { required: "Major/Field of study is required" })}
                 className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
               />
               {errors.field_of_study && (
                 <span className="text-xs text-red-600">{errors.field_of_study.message}</span>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="major" className="text-sm font-semibold text-slate-700">
-                Major <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="major"
-                type="text"
-                {...register("major", { required: "Major is required" })}
-                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
-              />
-              {errors.major && (
-                <span className="text-xs text-red-600">{errors.major.message}</span>
               )}
             </div>
 
@@ -428,33 +477,50 @@ export default function ProfileFormPage() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="university_name" className="text-sm font-semibold text-slate-700">
-                University Name <span className="text-red-500">*</span>
+              <label htmlFor="university_city" className="text-sm font-semibold text-slate-700">
+                University City <span className="text-red-500">*</span>
               </label>
               <input
-                id="university_name"
+                id="university_city"
                 type="text"
-                {...register("university_name", { required: "University name is required" })}
+                placeholder="e.g. Stanford"
+                {...register("university_city", { required: "University city is required" })}
                 className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
               />
-              {errors.university_name && (
-                <span className="text-xs text-red-600">{errors.university_name.message}</span>
+              {errors.university_city && (
+                <span className="text-xs text-red-600">{errors.university_city.message}</span>
               )}
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label htmlFor="university_state" className="text-sm font-semibold text-slate-700">
-                University State / Location <span className="text-red-500">*</span>
+                University State / Province <span className="text-red-500">*</span>
               </label>
               <input
                 id="university_state"
                 type="text"
-                placeholder="e.g. CA, NY"
-                {...register("university_state", { required: "State/Location is required" })}
+                placeholder="e.g. CA"
+                {...register("university_state", { required: "University state is required" })}
                 className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
               />
               {errors.university_state && (
                 <span className="text-xs text-red-600">{errors.university_state.message}</span>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="university_country" className="text-sm font-semibold text-slate-700">
+                University Country <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="university_country"
+                type="text"
+                placeholder="e.g. United States"
+                {...register("university_country", { required: "University country is required" })}
+                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+              />
+              {errors.university_country && (
+                <span className="text-xs text-red-600">{errors.university_country.message}</span>
               )}
             </div>
 
@@ -508,16 +574,17 @@ export default function ProfileFormPage() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="previous_degrees" className="text-sm font-semibold text-slate-700">
-                Previous Degrees <span className="text-xs text-slate-500 font-normal">(comma-separated)</span>
+              <label htmlFor="first_generation_student" className="text-sm font-semibold text-slate-700">
+                First-Generation Student <span className="text-xs text-slate-500 font-normal">(optional)</span>
               </label>
-              <input
-                id="previous_degrees"
-                type="text"
-                placeholder="e.g. Bachelor of Science"
-                {...register("previous_degrees")}
-                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
-              />
+              <select
+                id="first_generation_student"
+                {...register("first_generation_student")}
+                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none bg-white"
+              >
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+              </select>
             </div>
           </ProfileFormSection>
 
@@ -622,20 +689,6 @@ export default function ProfileFormPage() {
                 <option value="part_time">Part Time</option>
               </select>
             </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="first_generation_student" className="text-sm font-semibold text-slate-700">
-                First-Generation Student <span className="text-xs text-slate-500 font-normal">(optional)</span>
-              </label>
-              <select
-                id="first_generation_student"
-                {...register("first_generation_student")}
-                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none bg-white"
-              >
-                <option value="false">No</option>
-                <option value="true">Yes</option>
-              </select>
-            </div>
           </ProfileFormSection>
 
           {/* Section 5: Achievements */}
@@ -655,6 +708,19 @@ export default function ProfileFormPage() {
                 <option value="false">No</option>
                 <option value="true">Yes</option>
               </select>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="citations_count" className="text-sm font-semibold text-slate-700">
+                Citations Count <span className="text-xs text-slate-500 font-normal">(optional)</span>
+              </label>
+              <input
+                id="citations_count"
+                type="number"
+                placeholder="e.g. 15"
+                {...register("citations_count")}
+                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+              />
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -845,71 +911,7 @@ export default function ProfileFormPage() {
             </div>
           </ProfileFormSection>
 
-          {/* Section 7: Preferences & Goals (Optional) */}
-          <ProfileFormSection
-            title="7. Preferences & Goals (Optional)"
-            description="Help refine matches based on career path and preferences."
-          >
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="career_goals" className="text-sm font-semibold text-slate-700">Career Goals</label>
-              <input
-                id="career_goals"
-                type="text"
-                {...register("career_goals")}
-                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
-              />
-            </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="intended_industry" className="text-sm font-semibold text-slate-700">Intended Industry</label>
-              <input
-                id="intended_industry"
-                type="text"
-                {...register("intended_industry")}
-                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="languages" className="text-sm font-semibold text-slate-700">
-                Languages <span className="text-xs text-slate-500 font-normal">(comma-separated)</span>
-              </label>
-              <input
-                id="languages"
-                type="text"
-                placeholder="e.g. English, Spanish"
-                {...register("languages")}
-                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="preferred_scholarship_types" className="text-sm font-semibold text-slate-700">
-                Preferred Scholarship Types <span className="text-xs text-slate-500 font-normal">(comma-separated)</span>
-              </label>
-              <input
-                id="preferred_scholarship_types"
-                type="text"
-                placeholder="e.g. merit-based, need-based"
-                {...register("preferred_scholarship_types")}
-                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5 col-span-1 sm:col-span-2">
-              <label htmlFor="willing_to_return_home_country" className="text-sm font-semibold text-slate-700">
-                Willing to Return to Home Country After Studies?
-              </label>
-              <select
-                id="willing_to_return_home_country"
-                {...register("willing_to_return_home_country")}
-                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none bg-white"
-              >
-                <option value="false">No</option>
-                <option value="true">Yes</option>
-              </select>
-            </div>
-          </ProfileFormSection>
 
           {/* Form Actions */}
           <div className="flex justify-end pt-4">
