@@ -203,6 +203,9 @@ export default function ProfileFormPage() {
       payload.dependents = data.dependents ? parseInt(data.dependents as string) : null;
       payload.citations_count = data.citations_count ? parseInt(data.citations_count as string) : null;
 
+      payload.field_of_study = data.field_of_study;
+      payload.major = data.field_of_study;
+
       // Handle lists (comma separated values parsed to string lists)
       const parseList = (str: string) => str ? str.split(",").map(s => s.trim()).filter(Boolean) : [];
       payload.research_papers = data.research_papers ? parseList(data.research_papers) : null;

@@ -81,8 +81,10 @@ def test_completeness_score():
     data["gender"] = "Female"
     data["home_city"] = "Mumbai"
     data["family_income_bracket"] = "<30k"
-    data["career_goals"] = "AI Researcher"
-    data["intended_industry"] = "Tech"
+    data["residence_country"] = "US"
+    data["residence_city"] = "Stanford"
+    data["university_city"] = "Stanford"
+    data["university_country"] = "US"
     
     complete_profile = StudentProfile(**data)
     assert complete_profile.completeness_score() == 100.0

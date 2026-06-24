@@ -13,6 +13,9 @@ class StudentProfile(BaseModel):
     dual_citizenship: str | None = None
     home_country: str
     home_city: str | None = None
+    residence_country: str | None = None
+    residence_state: str | None = None
+    residence_city: str | None = None
     visa_type: str = Field(min_length=1)
     enrollment_status: Literal["full_time", "part_time"]
     first_generation_student: bool | None = None
@@ -23,7 +26,9 @@ class StudentProfile(BaseModel):
     major: str
     minor: str | None = None
     university_name: str
+    university_city: str | None = None
     university_state: str
+    university_country: str | None = None
     gpa: float = Field(ge=0.0)
     gpa_scale: float = Field(gt=0.0)
     gre: float | None = Field(None, ge=0)
@@ -38,6 +43,7 @@ class StudentProfile(BaseModel):
     # Merit
     published_research: bool
     research_papers: list[str] | None = None
+    citations_count: int | None = Field(None, ge=0)
     conference_presentations: int = Field(ge=0)
     patents: int = Field(ge=0)
     academic_awards: list[str] = Field(default_factory=list)
@@ -73,6 +79,8 @@ class StudentProfile(BaseModel):
         return {
             "nationality": self.nationality,
             "dual_citizenship": self.dual_citizenship,
+            "home_country": self.home_country,
+            "residence_country": self.residence_country,
             "visa_type": self.visa_type,
             "degree_level": self.degree_level,
             "enrollment_status": self.enrollment_status,
@@ -80,6 +88,7 @@ class StudentProfile(BaseModel):
             "major": self.major,
             "university_name": self.university_name,
             "university_state": self.university_state,
+            "university_country": self.university_country,
             "gpa": self.gpa,
             "gpa_scale": self.gpa_scale,
             "gre": self.gre,
@@ -89,6 +98,7 @@ class StudentProfile(BaseModel):
             "sat": self.sat,
             "act": self.act,
             "published_research": self.published_research,
+            "citations_count": self.citations_count,
             "conference_presentations": self.conference_presentations,
             "patents": self.patents,
             "has_leadership": len(self.leadership_roles) > 0,
@@ -96,22 +106,20 @@ class StudentProfile(BaseModel):
             "entrepreneurship_experience": self.entrepreneurship_experience,
             "financial_need_level": self.financial_need_level,
             "dependents": self.dependents,
-            "willing_to_return_home_country": self.willing_to_return_home_country,
-            "languages": self.languages,
-            "preferred_scholarship_types": self.preferred_scholarship_types,
             "gender": self.gender,
             "first_generation_student": self.first_generation_student
         }
 
     def completeness_score(self) -> float:
-        # Check an arbitrary but comprehensive set of fields for completeness.
+        # Check core fields collected by the frontend form.
         fields_to_check = [
             self.full_name, self.date_of_birth, self.gender, self.nationality, 
-            self.home_country, self.home_city, self.visa_type, self.enrollment_status,
+            self.home_country, self.home_city, self.residence_country, self.residence_city,
+            self.visa_type, self.enrollment_status,
             self.degree_level, self.field_of_study, self.major, self.university_name,
-            self.university_state, self.gpa, self.gpa_scale, self.expected_graduation_year,
-            self.financial_need_level, self.family_income_bracket, self.career_goals,
-            self.intended_industry
+            self.university_city, self.university_state, self.university_country,
+            self.gpa, self.gpa_scale, self.expected_graduation_year,
+            self.financial_need_level, self.family_income_bracket
         ]
         
         filled = sum(1 for field in fields_to_check if field is not None and field != "" and field != [])
