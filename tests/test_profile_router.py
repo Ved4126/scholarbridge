@@ -41,6 +41,7 @@ VALID_PROFILE = {
     "first_generation_student": True,
     "degree_level": "masters",
     "field_of_study": "Computer Science",
+    "major": "Computer Science",
     "minor": None,
     "university_name": "MIT",
     "university_city": "Cambridge",

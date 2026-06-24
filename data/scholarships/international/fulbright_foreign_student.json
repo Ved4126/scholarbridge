@@ -1,0 +1,69 @@
+{
+  "id": "fulbright_foreign_student",
+  "scholarship_name": "Fulbright Foreign Student Program",
+  "org_name": "Fulbright Program",
+  "source_url": "https://foreign.fulbrightonline.org/about/foreign-fulbright",
+  "country": "International",
+  "source_type": "government",
+  "award_amount": null,
+  "currency": "USD",
+  "deadline": "2026-10-31",
+  "award_year": 2026,
+  "degree_levels": [
+    "masters",
+    "phd"
+  ],
+  "eligible_nationalities": [
+    "Any"
+  ],
+  "eligible_visa_types": [
+    "J-1"
+  ],
+  "fields_of_study": [
+    "Any"
+  ],
+  "description": "The Fulbright Foreign Student Program enables graduate students, young professionals and artists from abroad to study and conduct research in the United States.",
+  "eligibility_text": "Program eligibility and selection procedures vary widely by country. Funding typically covers tuition, airfare, a living stipend, and health insurance. Requires J-1 visa sponsorship, English proficiency, and references.",
+  "feature_manifest": {
+    "total_features": 5,
+    "features": [
+      {
+        "id": "degree_level",
+        "label": "Eligible degree levels",
+        "type": "enum",
+        "student_field": "degree_level",
+        "values": ["masters", "phd"],
+        "required": true
+      },
+      {
+        "id": "toefl",
+        "label": "Minimum TOEFL Score",
+        "type": "threshold",
+        "student_field": "toefl",
+        "min": 80.0,
+        "required": false
+      },
+      {
+        "id": "essay",
+        "label": "Study/Research Objective Essay",
+        "type": "output",
+        "required": true
+      },
+      {
+        "id": "personal_statement",
+        "label": "Personal Statement Essay",
+        "type": "output",
+        "required": true
+      },
+      {
+        "id": "recommendations",
+        "label": "Three Letters of Recommendation",
+        "type": "output",
+        "required": true
+      }
+    ]
+  },
+  "last_verified": "2026-06-24T12:00:00Z",
+  "created_at": "2026-06-24T12:00:00Z",
+  "updated_at": "2026-06-24T12:00:00Z"
+}

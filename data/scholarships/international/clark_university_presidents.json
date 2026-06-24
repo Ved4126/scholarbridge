@@ -1,0 +1,63 @@
+{
+  "id": "clark_university_presidents",
+  "scholarship_name": "Clark University President's Scholarship",
+  "org_name": "Clark University",
+  "source_url": "https://www.clarku.edu/admissions/financial-aid/scholarships/presidents-scholarship/",
+  "country": "International",
+  "source_type": "university",
+  "award_amount": null,
+  "currency": "USD",
+  "deadline": "2026-11-15",
+  "award_year": 2026,
+  "degree_levels": [
+    "undergrad"
+  ],
+  "eligible_nationalities": [
+    "Any"
+  ],
+  "eligible_visa_types": [
+    "F-1",
+    "J-1"
+  ],
+  "fields_of_study": [
+    "Any"
+  ],
+  "description": "The President's Scholarship is Clark University's most prestigious merit award for incoming undergraduate students who show exceptional academic potential and leadership.",
+  "eligibility_text": "Awarded to first-year undergraduate applicants (including international students). Evaluated based on academic credentials, GPA, and potential.",
+  "feature_manifest": {
+    "total_features": 4,
+    "features": [
+      {
+        "id": "degree_level",
+        "label": "Undergraduate degree level",
+        "type": "enum",
+        "student_field": "degree_level",
+        "values": ["undergrad"],
+        "required": true
+      },
+      {
+        "id": "gpa",
+        "label": "Minimum Academic standing equivalent",
+        "type": "threshold",
+        "student_field": "gpa",
+        "min": 3.6,
+        "required": true
+      },
+      {
+        "id": "common_app_essay",
+        "label": "Common Application Essay",
+        "type": "output",
+        "required": true
+      },
+      {
+        "id": "transcripts",
+        "label": "Official High School Transcripts",
+        "type": "output",
+        "required": true
+      }
+    ]
+  },
+  "last_verified": "2026-06-24T12:00:00Z",
+  "created_at": "2026-06-24T12:00:00Z",
+  "updated_at": "2026-06-24T12:00:00Z"
+}

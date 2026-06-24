@@ -1,0 +1,80 @@
+{
+  "id": "campbell_fellowship_sar",
+  "scholarship_name": "Campbell Fellowship for Women Scholar-Practitioners",
+  "org_name": "School for Advanced Research (SAR)",
+  "source_url": "https://www.sarweb.org/campbell-fellowship/",
+  "country": "International",
+  "source_type": "foundation",
+  "award_amount": null,
+  "currency": "USD",
+  "deadline": "2026-11-01",
+  "award_year": 2026,
+  "degree_levels": [
+    "phd",
+    "postdoc"
+  ],
+  "eligible_nationalities": [
+    "Any"
+  ],
+  "eligible_visa_types": [
+    "Any"
+  ],
+  "fields_of_study": [
+    "Anthropology",
+    "Sociology",
+    "History",
+    "Social Science",
+    "Political Science"
+  ],
+  "description": "The Campbell Fellowship supports female social scientists from developing countries or whose work directly addresses the economic and social status of women in developing nations.",
+  "eligibility_text": "Open to women scholar-practitioners whose research focuses on women's socioeconomic status. Usually requires PhD or advanced status.",
+  "feature_manifest": {
+    "total_features": 6,
+    "features": [
+      {
+        "id": "degree_level",
+        "label": "Eligible degree levels (PhD or Postdoc)",
+        "type": "enum",
+        "student_field": "degree_level",
+        "values": ["phd", "postdoc"],
+        "required": true
+      },
+      {
+        "id": "gender",
+        "label": "Female gender identity",
+        "type": "enum",
+        "student_field": "gender",
+        "values": ["female"],
+        "required": true
+      },
+      {
+        "id": "research_experience",
+        "label": "Published research papers",
+        "type": "boolean",
+        "student_field": "published_research",
+        "required": true
+      },
+      {
+        "id": "research_proposal",
+        "label": "Research Project Proposal",
+        "type": "output",
+        "required": true
+      },
+      {
+        "id": "cv",
+        "label": "Curriculum Vitae (CV)",
+        "type": "output",
+        "required": true
+      },
+      {
+        "id": "recommendations",
+        "label": "Three Letters of Recommendation",
+        "type": "output",
+        "required": true
+      }
+    ]
+  },
+  "last_verified": "2026-06-24T12:00:00Z",
+  "created_at": "2026-06-24T12:00:00Z",
+  "updated_at": "2026-06-24T12:00:00Z"
+}

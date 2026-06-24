@@ -1,0 +1,65 @@
+{
+  "id": "mpower_global_citizen",
+  "scholarship_name": "MPOWER Global Citizen Scholarship",
+  "org_name": "MPOWER Financing",
+  "source_url": "https://www.mpowerfunding.com/scholarships/global-citizen/",
+  "country": "International",
+  "source_type": "corporation",
+  "award_amount": 10000,
+  "currency": "USD",
+  "deadline": "2026-07-15",
+  "award_year": 2026,
+  "degree_levels": [
+    "undergrad",
+    "masters",
+    "phd"
+  ],
+  "eligible_nationalities": [
+    "Any"
+  ],
+  "eligible_visa_types": [
+    "F-1",
+    "J-1"
+  ],
+  "fields_of_study": [
+    "Any"
+  ],
+  "description": "Scholarships for international students and DACA students enrolled full-time at a school supported by MPOWER Financing.",
+  "eligibility_text": "Must be accepted or enrolled full-time in a degree program at an MPOWER-supported US or Canadian institution. Must be an international student allowed to legally study in the US or Canada.",
+  "feature_manifest": {
+    "total_features": 4,
+    "features": [
+      {
+        "id": "degree_level",
+        "label": "Eligible degree levels",
+        "type": "enum",
+        "student_field": "degree_level",
+        "values": ["undergrad", "masters", "phd"],
+        "required": true
+      },
+      {
+        "id": "enrollment_status",
+        "label": "Full-time enrollment status",
+        "type": "enum",
+        "student_field": "enrollment_status",
+        "values": ["full_time"],
+        "required": true
+      },
+      {
+        "id": "essay",
+        "label": "Essay answering program prompts",
+        "type": "output",
+        "required": true
+      },
+      {
+        "id": "proof_of_enrollment",
+        "label": "Proof of Enrollment or Acceptance Letter",
+        "type": "output",
+        "required": true
+      }
+    ]
+  },
+  "last_verified": "2026-06-24T12:00:00Z",
+  "created_at": "2026-06-24T12:00:00Z",
+  "updated_at": "2026-06-24T12:00:00Z"
+}
