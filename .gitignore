@@ -219,3 +219,4 @@ __marimo__/
 
 # OS generated files
 .DS_Store
+node_modules/
