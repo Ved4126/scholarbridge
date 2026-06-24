@@ -99,6 +99,7 @@ class StudentProfile(BaseModel):
             "willing_to_return_home_country": self.willing_to_return_home_country,
             "languages": self.languages,
             "preferred_scholarship_types": self.preferred_scholarship_types,
+            "gender": self.gender,
             "first_generation_student": self.first_generation_student
         }
 
