@@ -1,25 +1,19 @@
 import { ScoringResult } from "@/lib/api";
 import { MatchScoreBadge } from "./MatchScoreBadge";
 import { DeadlineBadge } from "./DeadlineBadge";
-import { ExternalLink, AlertTriangle, CheckSquare, ShieldCheck } from "lucide-react";
+import { ExternalLink, AlertTriangle, CheckSquare, ShieldCheck, Sparkles, BookOpen } from "lucide-react";
 import { useState } from "react";
+import { generateExplanation } from "@/lib/explanations";
 
 interface ScholarshipCardProps {
   result: ScoringResult;
+  activeProfile: Record<string, unknown> | null;
 }
 
-export function ScholarshipCard({ result }: ScholarshipCardProps) {
+export function ScholarshipCard({ result, activeProfile }: ScholarshipCardProps) {
   const [checkedItems, setCheckedItems] = useState<Record<number, boolean>>({});
 
-  // 1. Deterministic explanation logic based on score
-  let explanationText = "";
-  if (result.score >= 80) {
-    explanationText = "This scholarship is a strong fit based on your profile and eligibility signals.";
-  } else if (result.score >= 60) {
-    explanationText = "You match several important eligibility signals, but a few items may need review.";
-  } else {
-    explanationText = "This scholarship may be worth reviewing, but your profile has some gaps or missing information.";
-  }
+  const { whyMatched, whatToReview, preparationAdvice, summary } = generateExplanation(result, activeProfile);
 
   const toggleCheck = (index: number) => {
     setCheckedItems((prev) => ({
@@ -66,52 +60,80 @@ export function ScholarshipCard({ result }: ScholarshipCardProps) {
         </div>
       </div>
 
-      {/* Why this matched */}
+      {/* Why this is a match (Overview) */}
       <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-4 space-y-2">
         <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
           <ShieldCheck className="h-4 w-4 text-emerald-600" />
-          Why this matched
+          Why this is a match
         </h4>
         <p className="text-sm text-slate-600 leading-relaxed">
-          {explanationText} Based on your submitted profile, this scholarship passed the required eligibility filters and reached a {result.score}% compatibility score. Review the preparation checklist and official source before applying.
+          {summary} Review the preparation checklist and official source guidelines below before starting your application.
         </p>
       </div>
 
-      {/* What to review (Gap Analysis) */}
-      <div className="space-y-3">
-        <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-          <AlertTriangle className="h-4 w-4 text-amber-500" />
-          What to review
-        </h4>
-        {result.gap_analysis && result.gap_analysis.length > 0 ? (
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {result.gap_analysis.map((gap, index) => (
-              <li key={index} className="bg-amber-50/50 border border-amber-200/60 rounded-xl p-3 text-xs sm:text-sm text-slate-700 space-y-1.5">
-                <span className="font-bold text-slate-800 block">{gap.label}</span>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="bg-white/80 border border-amber-200 px-2 py-0.5 rounded text-[11px] text-slate-600">
-                    Required: {gap.requirement}
-                  </span>
-                  <span className="bg-red-50 border border-red-100 text-red-700 px-2 py-0.5 rounded text-[11px]">
-                    Your profile: {gap.student_value !== null && gap.student_value !== undefined ? String(gap.student_value) : "not provided"}
-                  </span>
-                </div>
+      {/* Strengths from your profile */}
+      {whyMatched.length > 0 && (
+        <div className="space-y-3">
+          <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="h-4 w-4 text-amber-500" />
+            Strengths from your profile
+          </h4>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-slate-600 pl-1">
+            {whyMatched.map((strength, idx) => (
+              <li key={idx} className="flex items-start gap-2">
+                <span className="text-emerald-600 font-bold shrink-0">✓</span>
+                <span>{strength}</span>
               </li>
             ))}
           </ul>
-        ) : (
-          <p className="text-sm text-slate-500 italic pl-1">
-            No missing scored requirements were detected.
-          </p>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Preparation Checklist */}
+      {/* What to review before applying */}
       <div className="space-y-3">
         <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-          <CheckSquare className="h-4 w-4 text-emerald-600" />
-          Preparation checklist
+          <AlertTriangle className="h-4 w-4 text-amber-500" />
+          What to review before applying
         </h4>
+        <ul className="space-y-2.5">
+          {whatToReview.map((review, idx) => {
+            const isGaps = result.gap_analysis && result.gap_analysis.length > 0;
+            return (
+              <li
+                key={idx}
+                className={`border rounded-xl p-3 text-xs sm:text-sm text-slate-700 ${
+                  isGaps
+                    ? "bg-amber-50/40 border-amber-200/60"
+                    : "bg-slate-50/50 border-slate-200/60 italic"
+                }`}
+              >
+                {review}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      {/* Application preparation */}
+      <div className="space-y-3">
+        <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+          <BookOpen className="h-4 w-4 text-blue-600" />
+          Application preparation
+        </h4>
+        
+        {/* Visible Rich Advice */}
+        {preparationAdvice.length > 0 && (
+          <div className="bg-blue-50/40 border border-blue-100 rounded-xl p-4 text-xs sm:text-sm text-slate-700 space-y-2">
+            <span className="font-bold text-blue-800">Expert Guidance:</span>
+            <ul className="list-disc pl-4 space-y-1.5 text-slate-600">
+              {preparationAdvice.map((advice, idx) => (
+                <li key={idx}>{advice}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Preparation checklist tasks */}
         {result.action_checklist && result.action_checklist.length > 0 ? (
           <div className="border border-slate-200 rounded-xl p-4 bg-white space-y-3">
             <p className="text-xs text-slate-500">

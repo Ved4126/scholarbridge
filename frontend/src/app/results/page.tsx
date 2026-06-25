@@ -16,14 +16,24 @@ export default function ResultsPage() {
   const [results, setResults] = useState<ScoringResult[] | null>(null);
   const [completeness, setCompleteness] = useState<number | null>(null);
   const [profileId, setProfileId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeProfile, setActiveProfile] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     // Read from session storage on mount
     const cachedResults = sessionStorage.getItem("scholarship_results");
     const cachedCompleteness = sessionStorage.getItem("profile_completeness");
     const cachedProfileId = sessionStorage.getItem("profile_id");
+    const cachedProfile = sessionStorage.getItem("active_profile");
+
+    if (cachedProfile) {
+      try {
+        setActiveProfile(JSON.parse(cachedProfile));
+      } catch (e) {
+        console.error("Failed to parse cached profile", e);
+      }
+    }
 
     if (cachedProfileId) {
       setProfileId(cachedProfileId);
@@ -37,6 +47,13 @@ export default function ResultsPage() {
         const matches = await scoreAll(id);
         setResults(matches);
         sessionStorage.setItem("scholarship_results", JSON.stringify(matches));
+        
+        // Also fetch the full profile from API to ensure we have it for explanation context
+        const profileRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000"}/profile/${id}`);
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+          sessionStorage.setItem("active_profile", JSON.stringify(profileData));
+        }
       } catch (err: unknown) {
         console.error(err);
         setError(err instanceof Error ? err.message : "Failed to load scholarship matches.");
@@ -144,7 +161,7 @@ export default function ResultsPage() {
               {results
                 .filter((result) => result.scholarship_id !== "test_scholarship")
                 .map((result) => (
-                  <ScholarshipCard key={result.scholarship_id} result={result} />
+                  <ScholarshipCard key={result.scholarship_id} result={result} activeProfile={activeProfile} />
                 ))}
             </div>
           </div>

@@ -225,10 +225,11 @@ export default function ProfileFormPage() {
       const matches = await scoreAll(profileResult.profile_id);
 
 
-      // Save scoring results to session storage
+       // Save scoring results to session storage
       sessionStorage.setItem("scholarship_results", JSON.stringify(matches));
       sessionStorage.setItem("profile_completeness", String(profileResult.completeness));
       sessionStorage.setItem("profile_id", profileResult.profile_id);
+      sessionStorage.setItem("active_profile", JSON.stringify(payload));
 
       // Redirect to results
       router.push("/results");
